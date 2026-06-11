@@ -2,7 +2,7 @@ import { HomeProductBrowser } from "@/components/home-product-browser";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 import { getProducts, getCategoryChips, getSettings } from "@/lib/queries";
-import { ShoppingCart, Calendar } from "lucide-react";
+import { ShoppingCart, MessageCircle } from "lucide-react";
 
 export default async function HomePage() {
   const [products, categories, settings] = await Promise.all([
@@ -25,21 +25,21 @@ export default async function HomePage() {
             </span>
             
             <h1 className="font-body font-extrabold text-4xl md:text-5xl lg:text-6.5xl tracking-tight text-white mb-3">
-              COCO Paradise
+              {settings.business_name}
             </h1>
             
             <p className="font-body text-base md:text-lg font-bold text-white/95 mb-1">
-              Tropical Flavors. Modern Dining.
+              Registered coconut products and trading from Madurai District.
             </p>
             <p className="font-body text-sm text-white/80 mb-6">
-              Explore our menu and order your favorites.
+              Explore our products and order directly through WhatsApp.
             </p>
 
             <a
               href="#products"
               className="px-6 py-2.5 bg-white text-leaf font-bold rounded-full text-sm shadow-sm hover:bg-gray-50 transition-colors"
             >
-              Browse Menus
+              Browse Products
             </a>
           </div>
         </section>
@@ -59,7 +59,7 @@ export default async function HomePage() {
       <div className="fixed bottom-0 inset-x-0 bg-white/95 border-t border-gray-100 p-4 shadow-[0_-5px_15px_rgba(0,0,0,0.05)] backdrop-blur z-30">
         <div className="max-w-lg mx-auto grid grid-cols-2 gap-3">
           <a
-            href={`https://wa.me/${settings.whatsapp_number}?text=${encodeURIComponent("Hi, I'm checking out my cart at COCO Paradise.")}`}
+            href={`https://wa.me/${settings.whatsapp_number}?text=${encodeURIComponent(`Hi, I'm checking out products at ${settings.business_name}.`)}`}
             target="_blank"
             rel="noopener noreferrer"
             className="flex items-center justify-center gap-2 py-3 bg-leaf hover:bg-leaf-deep text-white font-bold rounded-full text-sm shadow transition-colors"
@@ -68,13 +68,13 @@ export default async function HomePage() {
             <span>View Cart</span>
           </a>
           <a
-            href={`https://wa.me/${settings.whatsapp_number}?text=${encodeURIComponent("Hi, I'd like to book a table at COCO Paradise.")}`}
+            href={`https://wa.me/${settings.whatsapp_number}?text=${encodeURIComponent(`Hi, I'd like to place a business enquiry with ${settings.business_name}.`)}`}
             target="_blank"
             rel="noopener noreferrer"
             className="flex items-center justify-center gap-2 py-3 border border-leaf hover:bg-leaf/5 text-leaf font-bold rounded-full text-sm transition-colors"
           >
-            <Calendar size={16} />
-            <span>Book a table</span>
+            <MessageCircle size={16} />
+            <span>Enquire</span>
           </a>
         </div>
       </div>

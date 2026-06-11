@@ -4,7 +4,7 @@ import { signOut } from "@/app/actions/auth";
 import { AdminNav } from "@/components/admin/admin-nav";
 
 export const metadata = {
-  title: "Admin · Coconet",
+  title: "Admin - Thennaiyan Coconut Company",
 };
 
 export default async function AdminLayout({
@@ -60,7 +60,7 @@ export default async function AdminLayout({
             className="font-display text-xl text-kernel"
             style={{ fontVariationSettings: "'SOFT' 50, 'opsz' 24" }}
           >
-            Coconet Admin
+            Thennaiyan Admin
           </div>
           <div className="mt-1 font-mono text-[10px] uppercase tracking-wider text-kernel/50">
             Content manager

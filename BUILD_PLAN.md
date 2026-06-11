@@ -1,4 +1,4 @@
-# Kovai Chekku - WhatsApp-first Ordering Build Plan
+# Thennaiyan Coconut Company - WhatsApp-first Ordering Build Plan
 
 > Phase-gated execution plan for Codex agents.
 > Finish one phase, run checks, confirm acceptance, then move to the next.

@@ -67,26 +67,42 @@ export interface SiteSettings {
   legal_owner: string;
   gst_number: string;
   business_type: string;
+  registration_type: string;
   gst_reg_date: string;
+  gst_valid_from: string;
+  gst_valid_to: string;
   jurisdiction: string;
+  proprietor_designation: string;
+  proprietor_state: string;
+  gst_approving_officer: string;
+  gst_certificate_issue_date: string;
+  additional_branches: string;
   address: string;
 }
 
 // ── Defaults / fallbacks ──────────────────────────────────────────────────────
 
 export const DEFAULT_SETTINGS: SiteSettings = {
-  business_name: "COCO Paradise",
-  brand_short: "COCO Paradise",
+  business_name: "Thennaiyan Coconut Company",
+  brand_short: "Thennaiyan",
   whatsapp_number: "918124165047",
   contact_phone: "+91 81241 65047",
-  contact_email: "support@cocoparadise.in",
-  business_hours: "Monday – Sunday: 11:00 AM – 11:00 PM IST",
-  legal_owner: "COCO Paradise Group",
+  contact_email: "support@thennaiyan.in",
+  business_hours: "Monday - Saturday: 08:00 AM - 06:00 PM IST",
+  legal_owner: "Tamilarasan Sathuragiri",
   gst_number: "33RRKPS2222A1ZU",
-  business_type: "Partnership",
+  business_type: "Proprietorship (Single Owner Business)",
+  registration_type: "Regular GST Registration",
   gst_reg_date: "22 January 2026",
-  jurisdiction: "Madurai",
-  address: "No. 45, Coconut Grove Street, Madurai, Tamil Nadu – 625001, India",
+  gst_valid_from: "22/01/2026",
+  gst_valid_to: "Not Applicable (Active Registration)",
+  jurisdiction: "Thirumangalam",
+  proprietor_designation: "Proprietor",
+  proprietor_state: "Tamil Nadu",
+  gst_approving_officer: "Assistant Commissioner",
+  gst_certificate_issue_date: "22/01/2026",
+  additional_branches: "0 (No additional registered business locations)",
+  address: "No. 265/3B, Veppampatti Vilakku, Peraiyur Main Road Near Bus Stop, Pappinaickanpatti, Peraiyur, Madurai District, Tamil Nadu - 625705, India",
 };
 
 export const FALLBACK_PRODUCTS: ProductCardData[] = [
@@ -204,7 +220,7 @@ export const FALLBACK_CATEGORIES: CategoryRow[] = [
   { id: "brownies", slug: "brownies", name: "BROWNIES", description: null, position: 1 },
   { id: "birthday-cakes", slug: "birthday-cakes", name: "Birthday Cakes", description: null, position: 2 },
   { id: "cold-beverages", slug: "cold-beverages", name: "COLD BEVERAGES", description: null, position: 3 },
-  { id: "special-desserts", slug: "special-desserts", name: "Coco Paradise Special Desserts", description: null, position: 4 },
+  { id: "special-desserts", slug: "special-desserts", name: "Thennaiyan Specials", description: null, position: 4 },
   { id: "dessert", slug: "dessert", name: "Dessert", description: null, position: 5 },
   { id: "hot-serves", slug: "hot-serves", name: "Hot Serves", description: null, position: 6 },
   { id: "main-course", slug: "main-course", name: "Main Course", description: null, position: 7 },

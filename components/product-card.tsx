@@ -36,7 +36,7 @@ export function ProductCard({
   className,
   onViewDetails,
   whatsappNumber = "918124165047",
-  brand = "COCO Paradise",
+  brand = "Thennaiyan",
 }: ProductCardProps) {
   const [isFavorite, setIsFavorite] = useState(false);
 

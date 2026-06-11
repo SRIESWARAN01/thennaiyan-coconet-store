@@ -19,7 +19,7 @@ const LINKS = [
 ];
 
 export function AdminNav() {
-  const pathname = usePathname();
+  const pathname = usePathname() ?? "";
 
   return (
     <nav className="space-y-1">

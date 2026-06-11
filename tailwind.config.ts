@@ -23,7 +23,7 @@ const config: Config = {
         // The chekku oil palette — derived from the coconut itself,
         // not from a default tailwind ramp.
         leaf: {
-          DEFAULT: "#217743", // COCO Paradise emerald green
+          DEFAULT: "#217743", // Thennaiyan emerald green
           deep: "#1a5e35",    // deeper green for focus and active states
           mist: "#e8f5ec",    // subtle light green for badges/backgrounds
         },

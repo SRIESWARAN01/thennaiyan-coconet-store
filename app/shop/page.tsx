@@ -4,7 +4,7 @@ import { SiteHeader } from "@/components/site-header";
 import { getCategoryChips, getProducts, getSettings } from "@/lib/queries";
 
 export const metadata = {
-  title: "Shop - Coconet",
+  title: "Shop - Thennaiyan Coconut Company",
 };
 
 export default async function ShopPage() {

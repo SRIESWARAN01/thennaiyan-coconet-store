@@ -15,7 +15,7 @@ type OrderRow = {
 };
 
 export const metadata = {
-  title: "Account - Coconet",
+  title: "Account - Thennaiyan Coconut Company",
 };
 
 export default async function AccountPage() {

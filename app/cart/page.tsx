@@ -10,7 +10,7 @@ function price(amount: number) {
 }
 
 export const metadata = {
-  title: "Cart - Coconet",
+  title: "Cart - Thennaiyan Coconut Company",
 };
 
 export default async function CartPage() {

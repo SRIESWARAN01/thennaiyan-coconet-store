@@ -29,8 +29,24 @@ export async function saveSettings(
     legal_owner: String(formData.get("legal_owner") ?? "").trim(),
     gst_number: String(formData.get("gst_number") ?? "").trim(),
     business_type: String(formData.get("business_type") ?? "").trim(),
+    registration_type: String(formData.get("registration_type") ?? "").trim(),
     gst_reg_date: String(formData.get("gst_reg_date") ?? "").trim(),
+    gst_valid_from: String(formData.get("gst_valid_from") ?? "").trim(),
+    gst_valid_to: String(formData.get("gst_valid_to") ?? "").trim(),
     jurisdiction: String(formData.get("jurisdiction") ?? "").trim(),
+    proprietor_designation: String(
+      formData.get("proprietor_designation") ?? "",
+    ).trim(),
+    proprietor_state: String(formData.get("proprietor_state") ?? "").trim(),
+    gst_approving_officer: String(
+      formData.get("gst_approving_officer") ?? "",
+    ).trim(),
+    gst_certificate_issue_date: String(
+      formData.get("gst_certificate_issue_date") ?? "",
+    ).trim(),
+    additional_branches: String(
+      formData.get("additional_branches") ?? "",
+    ).trim(),
     address: String(formData.get("address") ?? "").trim(),
   };
 

@@ -1,5 +1,5 @@
 -- ============================================================================
--- Thennaiyan Coconut Company (Coconet) — Coconut Oil Storefront Schema
+-- Thennaiyan Coconut Company - Coconut Oil Storefront Schema
 -- For Supabase Postgres. Run in order. Idempotent where possible.
 -- ============================================================================
 
@@ -533,7 +533,7 @@ insert into public.categories (slug, name, description, position) values
   ('brownies',  'BROWNIES',      'Delicious freshly baked brownies', 1),
   ('birthday-cakes',  'Birthday Cakes',      'Artisan custom cakes', 2),
   ('cold-beverages',  'COLD BEVERAGES',      'Refreshing cold drinks', 3),
-  ('special-desserts',  'Coco Paradise Special Desserts',      'Signature specials', 4),
+  ('special-desserts',  'Thennaiyan Specials',      'Signature specials', 4),
   ('dessert',  'Dessert',      'Gourmet sweet treats', 5),
   ('hot-serves',  'Hot Serves',      'Hot beverages and foods', 6),
   ('main-course',  'Main Course',      'Savory food selections', 7),
@@ -579,20 +579,38 @@ create index if not exists journal_published_idx on public.journal_entries(is_pu
 create table if not exists public.site_settings (
   id              boolean primary key default true,
   business_name   text not null default 'Thennaiyan Coconut Company',
-  brand_short     text not null default 'Coconet',
+  brand_short     text not null default 'Thennaiyan',
   whatsapp_number text not null default '918124165047',   -- digits only, for wa.me
   contact_phone   text not null default '+91 81241 65047',
   contact_email   text not null default 'support@thennaiyan.in',
-  business_hours  text not null default 'Monday – Saturday: 08:00 AM – 06:00 PM IST',
+  business_hours  text not null default 'Monday - Saturday: 08:00 AM - 06:00 PM IST',
   legal_owner     text not null default 'Tamilarasan Sathuragiri',
   gst_number      text not null default '33RRKPS2222A1ZU',
-  business_type   text not null default 'Proprietorship (Single Owner)',
+  business_type   text not null default 'Proprietorship (Single Owner Business)',
+  registration_type text not null default 'Regular GST Registration',
   gst_reg_date    text not null default '22 January 2026',
+  gst_valid_from  text not null default '22/01/2026',
+  gst_valid_to    text not null default 'Not Applicable (Active Registration)',
   jurisdiction    text not null default 'Thirumangalam',
-  address         text not null default 'No. 265/3B, Veppampatti Vilakku, Peraiyur Main Road Near Bus Stop, Pappinaickanpatti, Peraiyur, Madurai District, Tamil Nadu – 625705, India',
+  proprietor_designation text not null default 'Proprietor',
+  proprietor_state text not null default 'Tamil Nadu',
+  gst_approving_officer text not null default 'Assistant Commissioner',
+  gst_certificate_issue_date text not null default '22/01/2026',
+  additional_branches text not null default '0 (No additional registered business locations)',
+  address         text not null default 'No. 265/3B, Veppampatti Vilakku, Peraiyur Main Road Near Bus Stop, Pappinaickanpatti, Peraiyur, Madurai District, Tamil Nadu - 625705, India',
   updated_at      timestamptz not null default now(),
   constraint site_settings_singleton check (id)
 );
+
+alter table public.site_settings
+  add column if not exists registration_type text not null default 'Regular GST Registration',
+  add column if not exists gst_valid_from text not null default '22/01/2026',
+  add column if not exists gst_valid_to text not null default 'Not Applicable (Active Registration)',
+  add column if not exists proprietor_designation text not null default 'Proprietor',
+  add column if not exists proprietor_state text not null default 'Tamil Nadu',
+  add column if not exists gst_approving_officer text not null default 'Assistant Commissioner',
+  add column if not exists gst_certificate_issue_date text not null default '22/01/2026',
+  add column if not exists additional_branches text not null default '0 (No additional registered business locations)';
 
 -- ── RLS for the new tables ────────────────────────────────────────────────────
 alter table public.journal_entries enable row level security;
@@ -646,7 +664,7 @@ insert into public.categories (slug, name, description, position) values
   ('brownies',  'BROWNIES',      'Delicious freshly baked brownies', 1),
   ('birthday-cakes',  'Birthday Cakes',      'Artisan custom cakes', 2),
   ('cold-beverages',  'COLD BEVERAGES',      'Refreshing cold drinks', 3),
-  ('special-desserts',  'Coco Paradise Special Desserts',      'Signature specials', 4),
+  ('special-desserts',  'Thennaiyan Specials',      'Signature specials', 4),
   ('dessert',  'Dessert',      'Gourmet sweet treats', 5),
   ('hot-serves',  'Hot Serves',      'Hot beverages and foods', 6),
   ('main-course',  'Main Course',      'Savory food selections', 7),
@@ -702,9 +720,9 @@ on conflict (slug) do nothing;
 
 -- ── SEED: journal entries ────────────────────────────────────────────────────
 insert into public.journal_entries (slug, date_label, batch, title, excerpt, read_time, position) values
-  ('coco-paradise-grand-opening', '11 JUN 2026', 'EVENT',
-   'Grand Opening of COCO Paradise in Madurai',
-   'We are thrilled to open our doors to the sweet lovers of Madurai! Experience tropical flavors and modern dining today.',
+  ('thennaiyan-company-profile', '11 JUN 2026', 'PROFILE',
+   'Thennaiyan Coconut Company profile updated',
+   'Official company, GST, proprietor, and registered address details have been updated for Thennaiyan Coconut Company.',
    '3 min read', 1),
   ('crafting-perfect-brownie', '05 JUN 2026', 'KITCHEN',
    'The art of the perfect warm chocolate brownie',
@@ -713,12 +731,69 @@ insert into public.journal_entries (slug, date_label, batch, title, excerpt, rea
 on conflict (slug) do nothing;
 
 -- ── SEED: the singleton settings row ─────────────────────────────────────────
-insert into public.site_settings (id, business_name, brand_short, whatsapp_number, contact_phone, contact_email, address) values 
-  (true, 'COCO Paradise', 'COCO Paradise', '918124165047', '+91 81241 65047', 'support@cocoparadise.in', 'No. 45, Coconut Grove Street, Madurai, Tamil Nadu – 625001, India')
+insert into public.site_settings (
+  id,
+  business_name,
+  brand_short,
+  whatsapp_number,
+  contact_phone,
+  contact_email,
+  business_hours,
+  legal_owner,
+  gst_number,
+  business_type,
+  registration_type,
+  gst_reg_date,
+  gst_valid_from,
+  gst_valid_to,
+  jurisdiction,
+  proprietor_designation,
+  proprietor_state,
+  gst_approving_officer,
+  gst_certificate_issue_date,
+  additional_branches,
+  address
+) values (
+  true,
+  'Thennaiyan Coconut Company',
+  'Thennaiyan',
+  '918124165047',
+  '+91 81241 65047',
+  'support@thennaiyan.in',
+  'Monday - Saturday: 08:00 AM - 06:00 PM IST',
+  'Tamilarasan Sathuragiri',
+  '33RRKPS2222A1ZU',
+  'Proprietorship (Single Owner Business)',
+  'Regular GST Registration',
+  '22 January 2026',
+  '22/01/2026',
+  'Not Applicable (Active Registration)',
+  'Thirumangalam',
+  'Proprietor',
+  'Tamil Nadu',
+  'Assistant Commissioner',
+  '22/01/2026',
+  '0 (No additional registered business locations)',
+  'No. 265/3B, Veppampatti Vilakku, Peraiyur Main Road Near Bus Stop, Pappinaickanpatti, Peraiyur, Madurai District, Tamil Nadu - 625705, India'
+)
 on conflict (id) do update set
   business_name = excluded.business_name,
   brand_short = excluded.brand_short,
   whatsapp_number = excluded.whatsapp_number,
   contact_phone = excluded.contact_phone,
   contact_email = excluded.contact_email,
+  business_hours = excluded.business_hours,
+  legal_owner = excluded.legal_owner,
+  gst_number = excluded.gst_number,
+  business_type = excluded.business_type,
+  registration_type = excluded.registration_type,
+  gst_reg_date = excluded.gst_reg_date,
+  gst_valid_from = excluded.gst_valid_from,
+  gst_valid_to = excluded.gst_valid_to,
+  jurisdiction = excluded.jurisdiction,
+  proprietor_designation = excluded.proprietor_designation,
+  proprietor_state = excluded.proprietor_state,
+  gst_approving_officer = excluded.gst_approving_officer,
+  gst_certificate_issue_date = excluded.gst_certificate_issue_date,
+  additional_branches = excluded.additional_branches,
   address = excluded.address;

@@ -4,7 +4,7 @@ import { ArrowRight } from "lucide-react";
 import { getJournalEntries } from "@/lib/queries";
 
 export const metadata = {
-  title: "Journal · Coconet",
+  title: "Journal - Thennaiyan Coconut Company",
 };
 
 export default async function JournalPage() {

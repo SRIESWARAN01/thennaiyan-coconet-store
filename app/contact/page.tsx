@@ -5,7 +5,7 @@ import { MapPin, Phone, Mail, Clock } from "lucide-react";
 import { getSettings } from "@/lib/queries";
 
 export const metadata = {
-  title: "Contact · Coconet",
+  title: "Contact - Thennaiyan Coconut Company",
 };
 
 export default async function ContactPage() {

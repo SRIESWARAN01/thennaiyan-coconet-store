@@ -18,7 +18,7 @@ export function ProductDetailsModal({
   onClose,
   product,
   whatsappNumber = "918124165047",
-  brand = "Coconet",
+  brand = "Thennaiyan",
 }: ProductDetailsModalProps) {
   if (!isOpen || !product) return null;
 

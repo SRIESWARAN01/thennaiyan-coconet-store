@@ -1,4 +1,4 @@
-# Kovai Chekku - WhatsApp-first Coconut Oil Storefront
+# Thennaiyan Coconut Company - WhatsApp-first Coconut Oil Storefront
 
 A mobile-first coconut oil ordering system built with Next.js 15 and Supabase.
 

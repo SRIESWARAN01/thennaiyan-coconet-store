@@ -3,7 +3,7 @@ import { PhoneAuthForm } from "@/components/customer/phone-auth-form";
 import { SiteHeader } from "@/components/site-header";
 
 export const metadata = {
-  title: "Create Account - Coconet",
+  title: "Create Account - Thennaiyan Coconut Company",
 };
 
 export default async function SignupPage({
@@ -22,7 +22,7 @@ export default async function SignupPage({
         <section className="overflow-hidden rounded-b-[28px] bg-[#1f6b3b] px-6 py-10 text-center text-white shadow-[0_18px_35px_rgba(16,93,52,0.18)]">
           <img
             src="/logo.jpg"
-            alt="Coconet"
+            alt="Thennaiyan"
             className="mx-auto h-12 w-12 rounded-full object-cover"
           />
           <h1 className="mt-5 font-body text-3xl font-extrabold sm:text-5xl">

@@ -13,8 +13,16 @@ export interface SettingsValues {
   legal_owner: string;
   gst_number: string;
   business_type: string;
+  registration_type: string;
   gst_reg_date: string;
+  gst_valid_from: string;
+  gst_valid_to: string;
   jurisdiction: string;
+  proprietor_designation: string;
+  proprietor_state: string;
+  gst_approving_officer: string;
+  gst_certificate_issue_date: string;
+  additional_branches: string;
   address: string;
 }
 
@@ -125,14 +133,54 @@ export function SettingsForm({ settings }: { settings: SettingsValues }) {
             defaultValue={settings.business_type}
           />
           <Field
+            label="Registration type"
+            name="registration_type"
+            defaultValue={settings.registration_type}
+          />
+          <Field
             label="GST registration date"
             name="gst_reg_date"
             defaultValue={settings.gst_reg_date}
           />
           <Field
+            label="GST valid from"
+            name="gst_valid_from"
+            defaultValue={settings.gst_valid_from}
+          />
+          <Field
+            label="GST valid to"
+            name="gst_valid_to"
+            defaultValue={settings.gst_valid_to}
+          />
+          <Field
             label="GST jurisdiction"
             name="jurisdiction"
             defaultValue={settings.jurisdiction}
+          />
+          <Field
+            label="Proprietor designation"
+            name="proprietor_designation"
+            defaultValue={settings.proprietor_designation}
+          />
+          <Field
+            label="Proprietor state"
+            name="proprietor_state"
+            defaultValue={settings.proprietor_state}
+          />
+          <Field
+            label="Approving officer"
+            name="gst_approving_officer"
+            defaultValue={settings.gst_approving_officer}
+          />
+          <Field
+            label="Certificate issue date"
+            name="gst_certificate_issue_date"
+            defaultValue={settings.gst_certificate_issue_date}
+          />
+          <Field
+            label="Additional branches"
+            name="additional_branches"
+            defaultValue={settings.additional_branches}
           />
         </div>
         <div>

@@ -22,13 +22,13 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Kovai Chekku - Wood-pressed Coconut Oil",
+  title: "Thennaiyan Coconut Company - Coconut Products",
   description:
-    "Premium small-batch wood-pressed and cold-pressed coconut oil, batch-stamped and traceable from press to bottle.",
+    "Tamil Nadu-based proprietorship business registered under GST for coconut-related trading and business activities.",
   openGraph: {
-    title: "Kovai Chekku - Wood-pressed Coconut Oil",
+    title: "Thennaiyan Coconut Company - Coconut Products",
     description:
-      "Premium small-batch coconut oil with traceable batch numbers and press dates.",
+      "GST-registered coconut products and trading business from Peraiyur, Madurai District, Tamil Nadu.",
     type: "website",
   },
 };
