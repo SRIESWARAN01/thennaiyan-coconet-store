@@ -1,82 +1,120 @@
-# Kovai Chekku — Coconut Oil Storefront
+# Kovai Chekku - WhatsApp-first Coconut Oil Storefront
 
-A small-batch coconut oil e-commerce site, built on Next.js 15 + Supabase.
-Design language inspired by [cocoparadise.in](https://cocoparadise.in) — forest green and warm coconut cream, but reshaped around a traceable, vintage-style batch system.
+A mobile-first coconut oil ordering system built with Next.js 15 and Supabase.
 
-## What's in v0 (this commit)
+The business objective is simple: customers should log in with mobile number, browse products, place order intent through WhatsApp, track order status in their customer panel, and leave reviews. Admins should get a full dashboard for analytics, products, WhatsApp leads, orders, reviews, and reports.
 
-- ✅ Full design system: palette, typography, components, signature batch stamp
-- ✅ Homepage with hero, product grid, 3-step process, promise band, footer
-- ✅ Supabase schema with categories, products, variants, addresses, cart, orders, RLS policies, profile auto-creation trigger
-- ✅ Supabase SSR client (browser + server + middleware) wired up
-- ✅ Protected routes via middleware (`/account/*`, `/admin/*`)
-- ✅ Phase-gated build plan for the rest (see `BUILD_PLAN.md`)
+## Stack
 
-## What's still to build
+- Next.js 15 App Router, React Server Components first, TypeScript
+- Supabase for Postgres, Auth, Storage, Realtime, and Row-Level Security
+- Tailwind CSS with custom brand tokens
+- Razorpay planned later for UPI/cards
+- Zustand only for transient UI state such as cart drawer open/close
 
-Everything in `BUILD_PLAN.md` Phases 1–7: shop pages, cart, auth, checkout, account, admin, polish. The plan is structured for handing to Codex / Antigravity one phase at a time.
+## Core Flow
+
+1. Customer logs in with mobile number.
+2. Customer browses products and variants.
+3. Customer adds products to cart or orders directly.
+4. App creates a WhatsApp lead in Supabase.
+5. App opens WhatsApp with a prefilled order message.
+6. Admin receives and manages the order.
+7. Admin updates order status.
+8. Customer sees real-time tracking.
+9. Customer rates and reviews delivered products.
+
+## Customer Panel
+
+Planned customer features:
+
+- Mobile number login
+- Product browsing
+- Add to cart / order
+- WhatsApp order message generation
+- Order history
+- Current order status
+- Real-time status updates
+- Product rating and review
+
+## Admin Panel
+
+Planned admin features:
+
+- Separate admin login using Supabase Auth credentials and `profiles.role = 'admin'`
+- Analytics dashboard:
+  - Total website visitors
+  - Total product views
+  - Total cart clicks
+  - Total WhatsApp leads
+  - Total orders
+  - Total delivered orders
+  - Customer reviews and ratings
+- Product add/edit/delete
+- Order management
+- Customer detail view
+- WhatsApp lead management
+- Review moderation
+- Sales and order reports
+
+## Schema Highlights
+
+Core tables:
+
+- `profiles`
+- `categories`
+- `products`
+- `product_variants`
+- `product_images`
+- `cart_items`
+- `orders`
+- `order_items`
+
+WhatsApp/customer/admin additions:
+
+- `whatsapp_leads`
+- `analytics_events`
+- `order_status_events`
+- `product_reviews`
+
+Order status changes are written into `order_status_events`, and the orders tables are prepared for Supabase Realtime so customer tracking can update live.
+
+## Current State
+
+Built:
+
+- Homepage and design system
+- Product card/detail modal demo flow
+- Supabase client/server/middleware setup
+- RLS-backed schema for products, cart, orders, analytics, WhatsApp leads, reviews, and order status events
+- Phase-gated implementation plan in `BUILD_PLAN.md`
+
+Still to build:
+
+- Phone auth
+- Supabase-backed shop/detail pages
+- Server-backed cart actions
+- WhatsApp lead creation action
+- Customer account/order tracking panel
+- Admin analytics/dashboard
+- Admin product/order/review management
+- Razorpay payment phase
 
 ## Quickstart
 
 ```bash
-# 1. Install
-pnpm install   # or npm install
-
-# 2. Create a Supabase project at supabase.com, then:
-cp .env.local.example .env.local
-# Fill in NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY
-
-# 3. Run the schema
-# Open Supabase Studio → SQL Editor → paste contents of supabase/schema.sql → Run
-
-# 4. Dev
-pnpm dev
-# → http://localhost:3000
+npm install
+npm run dev
 ```
 
-After your first signup, promote yourself to admin:
+Create a Supabase project, add the required `.env.local` values, and run `supabase/schema.sql` in Supabase SQL Editor.
+
+After creating the first admin user, promote it manually:
 
 ```sql
-update public.profiles set role='admin' where email='you@example.com';
+update public.profiles
+set role = 'admin'
+where phone = '+919876543210';
 ```
 
-## Design rationale
-
-The reference site (cocoparadise.in) is a coconut restaurant, so I borrowed the *palette and feel* but not the layout vocabulary — restaurants and product brands have different jobs. The choices that aren't templated:
-
-- **Batch stamps** as the recurring identity element (most coconut oil brands hide their press date; we lead with it)
-- **Fraunces** instead of the usual wellness serif, with the SOFT and WONK axes dialed deliberately on the hero `<em>`
-- **JetBrains Mono** for batch and ml specs — gives the "lab certified" feel without buying a real cert
-- **Numbered process steps** kept because the press IS a real 3-day sequence; the numbers carry information, not decoration
-- **No rounded-3xl, no big radii** — coconut oil bottles have soft, modest curves; the UI follows suit
-
-## File map
-
-```
-app/
-  layout.tsx          ← fonts, metadata
-  page.tsx            ← homepage
-  globals.css         ← tokens + component classes
-components/
-  site-header.tsx
-  batch-stamp.tsx     ← the signature element
-  product-card.tsx
-lib/
-  utils.ts
-  supabase/
-    client.ts         ← browser
-    server.ts         ← RSC / server actions
-    middleware.ts     ← session refresh
-middleware.ts         ← runs updateSession on every request
-supabase/
-  schema.sql          ← full DDL + RLS + seeds
-BUILD_PLAN.md         ← the rest of the work, phase-gated
-```
-
-## Brand-name placeholder
-
-I used **Kovai Chekku** as a placeholder (Kovai = Coimbatore, Chekku = wooden press). Swap it across:
-- `app/layout.tsx` (metadata)
-- `components/site-header.tsx`
-- `app/page.tsx` (footer)
-- `supabase/schema.sql` (the `order_no` prefix `KC-YYMM-XXXXX` if you want a different prefix)
+Use `BUILD_PLAN.md` as the phase-by-phase implementation guide.

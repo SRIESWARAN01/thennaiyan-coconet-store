@@ -22,8 +22,8 @@
   }
 
   ::selection {
-    background-color: #D4A24C;
-    color: #1F2A1F;
+    background-color: #217743;
+    color: #ffffff;
   }
 
   /* Honor reduced motion */
@@ -67,21 +67,20 @@
   }
 
   /* CTAs — solid gold for primary, leaf for secondary.
-     Square-ish to match the bottle-label aesthetic. */
+     Pill-shaped to match the modern restaurant aesthetic. */
   .btn-primary {
-    @apply inline-flex items-center justify-center gap-2 px-6 py-3
-           bg-oil text-ink font-body font-medium text-sm
-           tracking-wide hover:bg-oil-deep hover:text-kernel
-           transition-colors duration-200
+    @apply inline-flex items-center justify-center gap-2 rounded-[8px] px-6 py-3
+           bg-leaf text-white font-body font-extrabold text-sm
+           tracking-wide hover:bg-leaf-deep transition-all duration-200
            focus-visible:outline focus-visible:outline-2
            focus-visible:outline-offset-2 focus-visible:outline-leaf;
   }
 
   .btn-secondary {
-    @apply inline-flex items-center justify-center gap-2 px-6 py-3
-           border border-leaf text-leaf font-body font-medium text-sm
-           tracking-wide hover:bg-leaf hover:text-kernel
-           transition-colors duration-200
+    @apply inline-flex items-center justify-center gap-2 rounded-[8px] px-6 py-3
+           border border-leaf text-leaf font-body font-extrabold text-sm
+           tracking-wide hover:bg-leaf-mist
+           transition-all duration-200
            focus-visible:outline focus-visible:outline-2
            focus-visible:outline-offset-2 focus-visible:outline-leaf;
   }
@@ -123,4 +122,3 @@
   animation: splashTextFadeIn 1.2s cubic-bezier(0.16, 1, 0.3, 1) 0.4s forwards;
   opacity: 0;
 }
-

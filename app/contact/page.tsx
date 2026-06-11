@@ -1,10 +1,16 @@
-"use client";
-
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
+import { ContactForm } from "@/components/contact-form";
 import { MapPin, Phone, Mail, Clock } from "lucide-react";
+import { getSettings } from "@/lib/queries";
 
-export default function ContactPage() {
+export const metadata = {
+  title: "Contact · Coconet",
+};
+
+export default async function ContactPage() {
+  const settings = await getSettings();
+
   return (
     <>
       <SiteHeader />
@@ -21,7 +27,8 @@ export default function ContactPage() {
               Connect with the press.
             </h1>
             <p className="mt-6 font-body text-base lg:text-lg text-shell leading-relaxed">
-              Have questions about our wooden-press process, custom packaging, bulk orders, or shipping timelines? Contact us directly.
+              Have questions about our wooden-press process, custom packaging,
+              bulk orders, or shipping timelines? Contact us directly.
             </p>
           </div>
         </section>
@@ -30,57 +37,89 @@ export default function ContactPage() {
         <section className="border-t border-b hairline bg-kernel-deeper/20 py-20">
           <div className="container">
             <div className="grid lg:grid-cols-[1fr_1.3fr] gap-16 lg:gap-24 items-start">
-              
               {/* Info Column */}
               <div className="space-y-10">
                 <div className="space-y-4">
                   <span className="eyebrow text-oil">Direct Contacts</span>
-                  <h2 className="font-display text-3xl text-leaf-deep" style={{ fontVariationSettings: "'SOFT' 50, 'opsz' 28" }}>
+                  <h2
+                    className="font-display text-3xl text-leaf-deep"
+                    style={{ fontVariationSettings: "'SOFT' 50, 'opsz' 28" }}
+                  >
                     Get in touch
                   </h2>
                 </div>
 
                 <div className="space-y-6 font-body text-sm text-shell">
                   <div className="flex gap-4">
-                    <Phone className="text-leaf mt-0.5 flex-shrink-0" size={18} strokeWidth={1.5} />
+                    <Phone
+                      className="text-leaf mt-0.5 flex-shrink-0"
+                      size={18}
+                      strokeWidth={1.5}
+                    />
                     <div className="space-y-1">
-                      <span className="font-mono text-xs text-shell-husk uppercase tracking-wider block">Phone & WhatsApp</span>
-                      <a href="https://wa.me/918124165047" className="font-semibold text-ink hover:text-leaf transition-colors text-base">
-                        +91 81241 65047
+                      <span className="font-mono text-xs text-shell-husk uppercase tracking-wider block">
+                        Phone &amp; WhatsApp
+                      </span>
+                      <a
+                        href={`https://wa.me/${settings.whatsapp_number}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="font-semibold text-ink hover:text-leaf transition-colors text-base"
+                      >
+                        {settings.contact_phone}
                       </a>
                     </div>
                   </div>
 
                   <div className="flex gap-4">
-                    <Mail className="text-leaf mt-0.5 flex-shrink-0" size={18} strokeWidth={1.5} />
+                    <Mail
+                      className="text-leaf mt-0.5 flex-shrink-0"
+                      size={18}
+                      strokeWidth={1.5}
+                    />
                     <div className="space-y-1">
-                      <span className="font-mono text-xs text-shell-husk uppercase tracking-wider block">Email Support</span>
-                      <a href="mailto:support@coconet.in" className="font-semibold text-ink hover:text-leaf transition-colors">
-                        support@thennaiyan.in
+                      <span className="font-mono text-xs text-shell-husk uppercase tracking-wider block">
+                        Email Support
+                      </span>
+                      <a
+                        href={`mailto:${settings.contact_email}`}
+                        className="font-semibold text-ink hover:text-leaf transition-colors"
+                      >
+                        {settings.contact_email}
                       </a>
                     </div>
                   </div>
 
                   <div className="flex gap-4">
-                    <Clock className="text-leaf mt-0.5 flex-shrink-0" size={18} strokeWidth={1.5} />
+                    <Clock
+                      className="text-leaf mt-0.5 flex-shrink-0"
+                      size={18}
+                      strokeWidth={1.5}
+                    />
                     <div className="space-y-1">
-                      <span className="font-mono text-xs text-shell-husk uppercase tracking-wider block">Office Hours</span>
+                      <span className="font-mono text-xs text-shell-husk uppercase tracking-wider block">
+                        Office Hours
+                      </span>
                       <p className="font-semibold text-ink">
-                        Monday – Saturday: 08:00 AM – 06:00 PM IST
+                        {settings.business_hours}
                       </p>
                     </div>
                   </div>
 
                   <div className="flex gap-4 border-t border-shell/10 pt-6">
-                    <MapPin className="text-leaf mt-0.5 flex-shrink-0" size={18} strokeWidth={1.5} />
+                    <MapPin
+                      className="text-leaf mt-0.5 flex-shrink-0"
+                      size={18}
+                      strokeWidth={1.5}
+                    />
                     <div className="space-y-1">
-                      <span className="font-mono text-xs text-shell-husk uppercase tracking-wider block">Registered Address</span>
+                      <span className="font-mono text-xs text-shell-husk uppercase tracking-wider block">
+                        Registered Address
+                      </span>
                       <p className="font-semibold text-ink leading-relaxed">
-                        Thennaiyan Coconut Company<br />
-                        No. 265/3B, Veppampatti Vilakku,<br />
-                        Peraiyur Main Road Near Bus Stop,<br />
-                        Pappinaickanpatti, Peraiyur, Madurai District,<br />
-                        Tamil Nadu – 625705, India
+                        {settings.business_name}
+                        <br />
+                        {settings.address}
                       </p>
                     </div>
                   </div>
@@ -89,58 +128,15 @@ export default function ContactPage() {
 
               {/* Form Column */}
               <div className="bg-kernel p-8 lg:p-10 border hairline shadow-sm">
-                <h3 className="font-display text-2xl text-ink mb-8" style={{ fontVariationSettings: "'SOFT' 50, 'opsz' 24" }}>
+                <h3
+                  className="font-display text-2xl text-ink mb-8"
+                  style={{ fontVariationSettings: "'SOFT' 50, 'opsz' 24" }}
+                >
                   Send a message
                 </h3>
 
-                <form onSubmit={(e) => e.preventDefault()} className="space-y-6">
-                  <div className="space-y-1.5">
-                    <label className="font-mono text-[10px] text-shell-husk uppercase tracking-wider block">
-                      Your Name
-                    </label>
-                    <input
-                      type="text"
-                      required
-                      placeholder="e.g. Tamilarasan"
-                      className="w-full bg-transparent border-b border-shell/30 focus:border-leaf focus:outline-none transition-colors py-2 text-sm text-ink placeholder-shell/30 font-body"
-                    />
-                  </div>
-
-                  <div className="space-y-1.5">
-                    <label className="font-mono text-[10px] text-shell-husk uppercase tracking-wider block">
-                      Email Address
-                    </label>
-                    <input
-                      type="email"
-                      required
-                      placeholder="e.g. you@example.com"
-                      className="w-full bg-transparent border-b border-shell/30 focus:border-leaf focus:outline-none transition-colors py-2 text-sm text-ink placeholder-shell/30 font-body"
-                    />
-                  </div>
-
-                  <div className="space-y-1.5">
-                    <label className="font-mono text-[10px] text-shell-husk uppercase tracking-wider block">
-                      Message
-                    </label>
-                    <textarea
-                      required
-                      rows={4}
-                      placeholder="Tell us what you're looking for..."
-                      className="w-full bg-transparent border-b border-shell/30 focus:border-leaf focus:outline-none transition-colors py-2 text-sm text-ink placeholder-shell/30 font-body resize-none"
-                    />
-                  </div>
-
-                  <div className="pt-4">
-                    <button
-                      type="submit"
-                      className="btn-primary w-full sm:w-auto"
-                    >
-                      Send Message
-                    </button>
-                  </div>
-                </form>
+                <ContactForm />
               </div>
-
             </div>
           </div>
         </section>

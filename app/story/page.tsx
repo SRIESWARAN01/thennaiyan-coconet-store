@@ -2,8 +2,15 @@ import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
 import { BatchStamp } from "@/components/batch-stamp";
 import { User, MapPin, FileText, Calendar, Building, Landmark } from "lucide-react";
+import { getSettings } from "@/lib/queries";
 
-export default function StoryPage() {
+export const metadata = {
+  title: "Our Story · Coconet",
+};
+
+export default async function StoryPage() {
+  const settings = await getSettings();
+
   return (
     <>
       <SiteHeader />
@@ -17,18 +24,20 @@ export default function StoryPage() {
               className="mt-6 font-display text-display-lg lg:text-display-xl text-leaf-deep"
               style={{ fontVariationSettings: "'SOFT' 70, 'opsz' 96" }}
             >
-              Empowering a Sustainable Future with Coconet Solutions
+              Empowering a Sustainable Future with {settings.brand_short} Solutions
             </h1>
             <p className="mt-8 font-body text-lg lg:text-xl text-shell leading-relaxed">
-              At Coconet, we&apos;re revolutionizing how natural resources can power innovation.
-              Our eco-friendly coconut-based products are crafted to deliver exceptional performance
-              while protecting the planet. Whether it&apos;s for agriculture, construction, erosion
-              control, or lifestyle needs, our solutions blend nature&apos;s power with cutting-edge sustainability.
+              At {settings.brand_short}, we&apos;re revolutionizing how natural
+              resources can power innovation. Our eco-friendly coconut-based
+              products are crafted to deliver exceptional performance while
+              protecting the planet. Whether it&apos;s for agriculture,
+              construction, erosion control, or lifestyle needs, our solutions
+              blend nature&apos;s power with cutting-edge sustainability.
             </p>
             <p className="mt-6 font-body text-base text-shell-husk leading-relaxed">
               Join us in building a cleaner, greener world — one coconut at a time.
             </p>
-            
+
             <div className="mt-10">
               <BatchStamp batch="042" pressed="FEB 2026" />
             </div>
@@ -48,7 +57,10 @@ export default function StoryPage() {
                   Corporate Profile
                 </h2>
                 <p className="mt-6 font-body text-sm text-shell leading-relaxed">
-                  THENNAIYAN COCONUT COMPANY is a registered business enterprise engaged in coconut-related trading and sustainable business activities. We maintain our principal place of business in Peraiyur, Madurai, operating under regular GST registration.
+                  {settings.business_name} is a registered business enterprise
+                  engaged in coconut-related trading and sustainable business
+                  activities. We maintain our principal place of business in
+                  Peraiyur, Madurai, operating under regular GST registration.
                 </p>
               </div>
 
@@ -56,9 +68,14 @@ export default function StoryPage() {
               <div className="bg-kernel p-8 lg:p-10 border hairline shadow-sm space-y-8">
                 <div className="flex items-center justify-between border-b border-shell/15 pb-6">
                   <div>
-                    <span className="font-mono text-eyebrow text-oil uppercase">Registration Details</span>
-                    <h3 className="mt-1 font-display text-2xl text-ink" style={{ fontVariationSettings: "'SOFT' 50, 'opsz' 24" }}>
-                      Thennaiyan Coconut Company
+                    <span className="font-mono text-eyebrow text-oil uppercase">
+                      Registration Details
+                    </span>
+                    <h3
+                      className="mt-1 font-display text-2xl text-ink"
+                      style={{ fontVariationSettings: "'SOFT' 50, 'opsz' 24" }}
+                    >
+                      {settings.business_name}
                     </h3>
                   </div>
                   <Landmark className="text-oil" size={28} strokeWidth={1.5} />
@@ -69,28 +86,30 @@ export default function StoryPage() {
                     <span className="font-mono text-xs text-shell-husk flex items-center gap-1.5">
                       <User size={14} className="text-leaf" /> Legal Owner
                     </span>
-                    <p className="font-semibold text-ink">Tamilarasan Sathuragiri</p>
+                    <p className="font-semibold text-ink">{settings.legal_owner}</p>
                   </div>
 
                   <div className="space-y-1">
                     <span className="font-mono text-xs text-shell-husk flex items-center gap-1.5">
                       <FileText size={14} className="text-leaf" /> GST Number (GSTIN)
                     </span>
-                    <p className="font-mono font-semibold text-ink">33RRKPS2222A1ZU</p>
+                    <p className="font-mono font-semibold text-ink">
+                      {settings.gst_number}
+                    </p>
                   </div>
 
                   <div className="space-y-1">
                     <span className="font-mono text-xs text-shell-husk flex items-center gap-1.5">
                       <Building size={14} className="text-leaf" /> Business Type
                     </span>
-                    <p className="font-semibold text-ink">Proprietorship (Single Owner)</p>
+                    <p className="font-semibold text-ink">{settings.business_type}</p>
                   </div>
 
                   <div className="space-y-1">
                     <span className="font-mono text-xs text-shell-husk flex items-center gap-1.5">
                       <Calendar size={14} className="text-leaf" /> GST Registration Date
                     </span>
-                    <p className="font-semibold text-ink">22 January 2026</p>
+                    <p className="font-semibold text-ink">{settings.gst_reg_date}</p>
                   </div>
 
                   <div className="sm:col-span-2 space-y-1">
@@ -98,19 +117,21 @@ export default function StoryPage() {
                       <MapPin size={14} className="text-leaf" /> Registered Address
                     </span>
                     <p className="font-semibold text-ink leading-relaxed">
-                      No. 265/3B, Veppampatti Vilakku, Peraiyur Main Road Near Bus Stop,<br />
-                      Pappinaickanpatti, Peraiyur, Madurai District,<br />
-                      Tamil Nadu – 625705, India
+                      {settings.address}
                     </p>
                   </div>
 
                   <div className="space-y-1">
-                    <span className="font-mono text-xs text-shell-husk">GST Division / Jurisdiction</span>
-                    <p className="font-semibold text-ink">Thirumangalam</p>
+                    <span className="font-mono text-xs text-shell-husk">
+                      GST Division / Jurisdiction
+                    </span>
+                    <p className="font-semibold text-ink">{settings.jurisdiction}</p>
                   </div>
 
                   <div className="space-y-1">
-                    <span className="font-mono text-xs text-shell-husk">Branch Locations</span>
+                    <span className="font-mono text-xs text-shell-husk">
+                      Branch Locations
+                    </span>
                     <p className="font-semibold text-ink">0 (Principal Place Only)</p>
                   </div>
                 </div>

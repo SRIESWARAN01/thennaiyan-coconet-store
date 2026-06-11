@@ -1,131 +1,119 @@
-import { BatchStamp } from "./batch-stamp";
-import { X, ShieldCheck, Check } from "lucide-react";
+"use client";
+
+import { Check, MessageCircle, X } from "lucide-react";
 import type { ProductCardData } from "./product-card";
 
 interface ProductDetailsModalProps {
   isOpen: boolean;
   onClose: () => void;
   product: ProductCardData | null;
+  whatsappNumber?: string;
+  brand?: string;
 }
 
-export function ProductDetailsModal({ isOpen, onClose, product }: ProductDetailsModalProps) {
+const INR = "\u20B9";
+
+export function ProductDetailsModal({
+  isOpen,
+  onClose,
+  product,
+  whatsappNumber = "918124165047",
+  brand = "Coconet",
+}: ProductDetailsModalProps) {
   if (!isOpen || !product) return null;
 
-  const whatsappText = `Hi, I'm interested in ordering: *${product.name}* (${product.variant}) from Coconet.
+  const whatsappText = `Hi, I want to order ${product.name} (${product.variant}) from ${brand}.
 Batch: ${product.batch}
 Pressed: ${product.pressed}
-Starting Price: ₹${product.startingFrom}`;
-  const whatsappUrl = `https://wa.me/918124165047?text=${encodeURIComponent(whatsappText)}`;
+Starting Price: ${INR}${product.startingFrom}`;
+  const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(
+    whatsappText,
+  )}`;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-      {/* Backdrop */}
-      <div 
-        className="absolute inset-0 bg-ink/70 backdrop-blur-sm transition-opacity duration-300"
-        onClick={onClose}
-      />
-
-      {/* Modal Content */}
-      <div className="relative w-full max-w-lg bg-kernel border hairline overflow-hidden shadow-2xl z-10 animate-fade-in animate-duration-200">
-        
-        {/* Close button */}
-        <button
-          onClick={onClose}
-          className="absolute right-4 top-4 p-2 bg-kernel/90 border hairline rounded-full hover:bg-kernel-deeper transition-colors duration-200 z-20 text-shell hover:text-ink focus:outline-none focus:ring-2 focus:ring-leaf"
-          aria-label="Close details"
-        >
-          <X size={16} />
-        </button>
-
-        {/* Product Color Gradient Block */}
+    <div className="fixed inset-0 z-50 grid place-items-center bg-black/45 p-4 backdrop-blur-sm">
+      <section className="w-full max-w-md overflow-hidden rounded-[8px] bg-white shadow-2xl">
         <div
-          className="aspect-[16/7] w-full relative"
+          className="relative aspect-[16/9]"
           style={{
-            background: `linear-gradient(160deg, ${product.hueA} 0%, ${product.hueB} 100%)`,
+            background: `radial-gradient(circle at 28% 18%, rgba(255,255,255,0.78), transparent 26%), linear-gradient(150deg, ${product.hueA}, ${product.hueB})`,
           }}
         >
-          <div className="absolute inset-0 bg-gradient-to-t from-ink/30 to-transparent" />
-          <div className="absolute bottom-4 left-6">
-            <span className="eyebrow text-kernel/90">{product.variant}</span>
+          <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent" />
+          <button
+            type="button"
+            onClick={onClose}
+            aria-label="Close details"
+            className="absolute right-3 top-3 grid h-8 w-8 place-items-center rounded-full bg-white/90 text-[#111827]"
+          >
+            <X size={16} />
+          </button>
+          <div className="absolute bottom-3 left-4 right-4">
+            <p className="font-body text-[10px] font-extrabold uppercase tracking-[0.18em] text-white/75">
+              Batch {product.batch} - {product.pressed}
+            </p>
+            <h2 className="mt-1 truncate font-body text-xl font-extrabold text-white">
+              {product.name}
+            </h2>
           </div>
         </div>
 
-        {/* Product Details */}
-        <div className="p-6 lg:p-8 space-y-6">
-          
-          {/* Header */}
-          <div className="space-y-2">
-            <h3 
-              className="font-display text-3xl text-leaf-deep"
-              style={{ fontVariationSettings: "'SOFT' 60, 'opsz' 32" }}
-            >
-              {product.name}
-            </h3>
-            
-            <div className="pt-1">
-              <BatchStamp batch={product.batch} pressed={product.pressed} className="!px-0 !py-0 !border-0 !bg-transparent" />
+        <div className="p-4">
+          <div className="flex items-start justify-between gap-4">
+            <div>
+              <p className="font-body text-sm font-bold text-[#667085]">
+                {product.variant}
+              </p>
+              <p className="mt-1 font-body text-2xl font-extrabold text-[#05833f]">
+                {INR}
+                {product.startingFrom.toFixed(2)}
+              </p>
             </div>
+            <span className="rounded-full bg-[#edf6ee] px-3 py-1 font-body text-[11px] font-extrabold uppercase text-[#1f6b3b]">
+              Natural
+            </span>
           </div>
 
-          <div className="h-px bg-shell/15" />
+          <p className="mt-4 font-body text-sm font-semibold leading-relaxed text-[#475467]">
+            {product.description || product.tagline}
+          </p>
 
-          {/* Description */}
-          <div className="space-y-4">
-            <span className="font-mono text-[10px] text-shell-husk uppercase tracking-wider block">Description</span>
-            <p className="font-body text-sm text-shell leading-relaxed">
-              {product.description || product.tagline}
-            </p>
-          </div>
-
-          {/* Key Benefits */}
           {product.benefits && product.benefits.length > 0 && (
-            <div className="space-y-3">
-              <span className="font-mono text-[10px] text-shell-husk uppercase tracking-wider block">Key Benefits</span>
-              <ul className="grid sm:grid-cols-2 gap-2 text-sm text-shell font-body">
-                {product.benefits.map((benefit) => (
-                  <li key={benefit} className="flex items-center gap-2">
-                    <span className="flex-shrink-0 w-4 h-4 bg-leaf/10 text-leaf rounded-full flex items-center justify-center">
-                      <Check size={10} strokeWidth={3} />
-                    </span>
-                    <span>{benefit}</span>
-                  </li>
-                ))}
-              </ul>
+            <div className="mt-4 grid gap-2">
+              {product.benefits.slice(0, 4).map((benefit) => (
+                <div
+                  key={benefit}
+                  className="flex items-center gap-2 rounded-[8px] bg-[#f3f7f2] px-3 py-2 font-body text-xs font-bold text-[#344054]"
+                >
+                  <span className="grid h-5 w-5 shrink-0 place-items-center rounded-full bg-[#1f6b3b] text-white">
+                    <Check size={12} strokeWidth={3} />
+                  </span>
+                  {benefit}
+                </div>
+              ))}
             </div>
           )}
 
-          <div className="h-px bg-shell/15 pt-2" />
-
-          {/* Action Row */}
-          <div className="flex items-center justify-between gap-4 pt-2">
-            <div className="space-y-0.5">
-              <span className="font-mono text-[10px] text-shell-husk uppercase tracking-wider block">Starting From</span>
-              <span className="font-mono text-xl font-bold text-ink">₹{product.startingFrom}</span>
-            </div>
-
-            <div className="flex gap-3">
-              <button 
-                onClick={onClose}
-                className="btn-secondary !px-4 !py-2.5 rounded-sm"
-              >
-                Close
-              </button>
-              <a
-                href={whatsappUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="btn-primary !px-5 !py-2.5 rounded-sm flex items-center gap-2"
-              >
-                <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
-                  <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L0 24l6.335-1.662c1.746.953 3.71 1.458 5.704 1.46h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
-                </svg>
-                Order on WhatsApp
-              </a>
-            </div>
+          <div className="mt-5 grid grid-cols-[0.9fr_1.1fr] gap-2">
+            <button
+              type="button"
+              onClick={onClose}
+              className="h-10 rounded-[8px] border border-[#356f3b] font-body text-sm font-extrabold text-[#356f3b]"
+            >
+              Close
+            </button>
+            <a
+              href={whatsappUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex h-10 items-center justify-center gap-2 rounded-[8px] bg-[#356f3b] font-body text-sm font-extrabold text-white"
+            >
+              <MessageCircle size={16} />
+              WhatsApp
+            </a>
           </div>
-
         </div>
-      </div>
+      </section>
     </div>
   );
 }

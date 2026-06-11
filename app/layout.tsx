@@ -22,12 +22,13 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "COCO Paradise - Menu Ordering",
+  title: "Kovai Chekku - Wood-pressed Coconut Oil",
   description:
-    "Mobile-first restaurant ordering, cart, nutrition, and table-booking experience for COCO Paradise.",
+    "Premium small-batch wood-pressed and cold-pressed coconut oil, batch-stamped and traceable from press to bottle.",
   openGraph: {
-    title: "COCO Paradise - Menu Ordering",
-    description: "Browse tropical desserts, beverages, dine-in bites, and book a table.",
+    title: "Kovai Chekku - Wood-pressed Coconut Oil",
+    description:
+      "Premium small-batch coconut oil with traceable batch numbers and press dates.",
     type: "website",
   },
 };
