@@ -11,6 +11,9 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+  serverActions: {
+    bodySizeLimit: "10mb",
+  },
   experimental: {
     ...(isWindows ? { cpus: 1 } : {}),
     optimizePackageImports: ["lucide-react"],
