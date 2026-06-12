@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Plus, Pencil } from "lucide-react";
+import { Plus, Pencil, Layers } from "lucide-react";
 import { getAllProductsAdmin } from "@/lib/queries";
 import { deleteProduct } from "@/app/actions/products";
 import { ConfirmSubmit } from "@/components/admin/confirm-submit";
@@ -84,6 +84,12 @@ export default async function AdminProductsPage() {
                     </td>
                     <td className="px-4 py-3">
                       <div className="flex items-center justify-end gap-2">
+                        <Link
+                          href={`/admin/products/${p.id}/variants`}
+                          className="inline-flex items-center gap-1 px-2.5 py-1.5 border border-shell/30 text-shell hover:border-leaf hover:text-leaf transition-colors rounded-sm text-xs font-medium"
+                        >
+                          <Layers size={12} /> Sizes
+                        </Link>
                         <Link
                           href={`/admin/products/${p.id}/edit`}
                           className="inline-flex items-center gap-1 px-2.5 py-1.5 border border-leaf text-leaf hover:bg-leaf hover:text-kernel transition-colors rounded-sm text-xs font-medium"

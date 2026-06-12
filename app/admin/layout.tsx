@@ -55,34 +55,41 @@ export default async function AdminLayout({
     <div className="min-h-screen bg-kernel-deeper/20 lg:grid lg:grid-cols-[240px_1fr]">
       {/* Sidebar */}
       <aside className="bg-leaf-deep text-kernel lg:min-h-screen flex flex-col">
-        <div className="p-5 border-b border-kernel/10">
-          <div
-            className="font-display text-xl text-kernel"
-            style={{ fontVariationSettings: "'SOFT' 50, 'opsz' 24" }}
-          >
-            Thennaiyan Admin
+        <div className="p-5 border-b border-kernel/10 flex items-center justify-between lg:block">
+          <div>
+            <div
+              className="font-display text-xl text-kernel"
+              style={{ fontVariationSettings: "'SOFT' 50, 'opsz' 24" }}
+            >
+              Thennaiyan Admin
+            </div>
+            <div className="mt-1 font-mono text-[10px] uppercase tracking-wider text-kernel/50">
+              Content manager
+            </div>
           </div>
-          <div className="mt-1 font-mono text-[10px] uppercase tracking-wider text-kernel/50">
-            Content manager
-          </div>
+          
+          {/* Quick Sign Out on Mobile Header */}
+          <form action={signOut} className="lg:hidden">
+            <button
+              type="submit"
+              className="px-3 py-1.5 rounded-sm bg-white/10 hover:bg-white/20 text-xs font-bold font-body transition-colors"
+            >
+              Sign out
+            </button>
+          </form>
         </div>
 
         <div className="p-3 flex-1">
           <AdminNav />
         </div>
 
-        <div className="p-3 border-t border-kernel/10">
-          <div className="px-3 py-2 font-mono text-[10px] text-kernel/50 truncate">
+        <div className="p-3 border-t border-kernel/10 hidden lg:block">
+          <div className="px-3 py-1 font-mono text-[10px] text-kernel/50 truncate">
+            Logged in as:
+          </div>
+          <div className="px-3 pb-1 font-mono text-[10px] text-kernel/70 truncate">
             {profile.full_name || profile.email || user.email}
           </div>
-          <form action={signOut}>
-            <button
-              type="submit"
-              className="w-full text-left px-3 py-2 rounded-sm font-body text-sm text-kernel/70 hover:text-kernel hover:bg-kernel/10 transition-colors"
-            >
-              Sign out
-            </button>
-          </form>
         </div>
       </aside>
 

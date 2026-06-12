@@ -3,6 +3,7 @@
 import { useActionState, useState } from "react";
 import Link from "next/link";
 import { saveProduct, type ProductActionState } from "@/app/actions/products";
+import { createClient } from "@/lib/supabase/client";
 
 export interface ProductFormProduct {
   id: string;
@@ -22,6 +23,7 @@ export interface ProductFormProduct {
   hue_b: string;
   is_active: boolean;
   position: number;
+  hero_image?: string | null;
 }
 
 interface ProductFormProps {
@@ -44,10 +46,62 @@ export function ProductForm({ product, categories }: ProductFormProps) {
 
   const [hueA, setHueA] = useState(product?.hue_a || "#D4A24C");
   const [hueB, setHueB] = useState(product?.hue_b || "#A8762A");
+  const [heroImageUrl, setHeroImageUrl] = useState(product?.hero_image || "");
+  const [uploading, setUploading] = useState(false);
+  const [uploadStatus, setUploadStatus] = useState<string | null>(null);
+
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setUploading(true);
+    setUploadStatus("Processing...");
+
+    try {
+      const supabase = createClient();
+      const fileExt = file.name.split(".").pop();
+      const fileName = `${Math.random().toString(36).substring(2, 15)}-${Date.now()}.${fileExt}`;
+      const filePath = `products/${fileName}`;
+
+      const { data, error } = await supabase.storage
+        .from("product-images")
+        .upload(filePath, file, {
+          cacheControl: "3600",
+          upsert: false,
+        });
+
+      if (error) {
+        throw error;
+      }
+
+      const { data: { publicUrl } } = supabase.storage
+        .from("product-images")
+        .getPublicUrl(filePath);
+
+      setHeroImageUrl(publicUrl);
+      setUploadStatus("Successfully uploaded to Supabase Storage!");
+    } catch (err: any) {
+      console.warn("Supabase storage upload failed, falling back to base64:", err);
+      
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        const base64 = event.target?.result as string;
+        setHeroImageUrl(base64);
+        setUploadStatus("Saved locally (Base64 fallback due to offline storage).");
+      };
+      reader.onerror = () => {
+        setUploadStatus("Error reading file.");
+      };
+      reader.readAsDataURL(file);
+    } finally {
+      setUploading(false);
+    }
+  };
 
   return (
     <form action={formAction} className="space-y-8">
       {product?.id && <input type="hidden" name="id" value={product.id} />}
+      <input type="hidden" name="hero_image" value={heroImageUrl} />
 
       <div className="grid sm:grid-cols-2 gap-5">
         <div>
@@ -94,6 +148,91 @@ export function ProductForm({ product, categories }: ProductFormProps) {
               </option>
             ))}
           </select>
+        </div>
+      </div>
+
+      {/* Image Upload section */}
+      <div className="space-y-4 border border-shell/10 p-5 rounded-sm bg-kernel/5">
+        <span className={labelCls}>Product Image</span>
+        
+        <div className="grid md:grid-cols-[160px_1fr] gap-5 items-start">
+          {/* Image Preview */}
+          <div className="aspect-[4/3] w-full max-w-[160px] border border-shell/20 rounded-sm bg-kernel relative flex items-center justify-center overflow-hidden">
+            {heroImageUrl ? (
+              <img
+                src={heroImageUrl}
+                alt="Product preview"
+                className="w-full h-full object-cover"
+              />
+            ) : (
+              <span className="font-mono text-[10px] text-shell-husk uppercase tracking-wider text-center px-2">
+                No Image
+              </span>
+            )}
+          </div>
+
+          {/* Upload Controls */}
+          <div className="space-y-4">
+            <div>
+              <span className="font-mono text-[10px] text-shell-husk uppercase tracking-wider block mb-1.5">
+                Upload image file
+              </span>
+              <input
+                type="file"
+                accept="image/*"
+                onChange={handleFileChange}
+                disabled={uploading}
+                className="block w-full text-xs font-mono text-shell
+                  file:mr-4 file:py-1.5 file:px-3
+                  file:rounded-sm file:border file:border-leaf
+                  file:text-xs file:font-bold file:font-body
+                  file:bg-transparent file:text-leaf
+                  hover:file:bg-leaf hover:file:text-kernel
+                  file:transition-colors file:cursor-pointer"
+              />
+            </div>
+
+            <div className="relative flex py-1 items-center">
+              <div className="flex-grow border-t border-shell/10"></div>
+              <span className="flex-shrink mx-4 font-mono text-[10px] text-shell-husk uppercase tracking-wider">or</span>
+              <div className="flex-grow border-t border-shell/10"></div>
+            </div>
+
+            <div>
+              <span className="font-mono text-[10px] text-shell-husk uppercase tracking-wider block mb-1.5">
+                Custom Image URL
+              </span>
+              <input
+                type="text"
+                value={heroImageUrl}
+                onChange={(e) => {
+                  setHeroImageUrl(e.target.value);
+                  setUploadStatus(null);
+                }}
+                placeholder="https://example.com/image.jpg"
+                className={inputCls}
+              />
+            </div>
+
+            {uploadStatus && (
+              <p className={`font-mono text-[10px] uppercase tracking-wider ${uploadStatus.includes("Error") ? "text-red-600" : "text-leaf"}`}>
+                {uploadStatus}
+              </p>
+            )}
+
+            {heroImageUrl && (
+              <button
+                type="button"
+                onClick={() => {
+                  setHeroImageUrl("");
+                  setUploadStatus(null);
+                }}
+                className="font-mono text-[10px] text-red-600 hover:text-red-800 uppercase tracking-wider underline block"
+              >
+                Remove image
+              </button>
+            )}
+          </div>
         </div>
       </div>
 

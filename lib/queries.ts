@@ -1,10 +1,7 @@
 // ============================================================================
 // Server-side data access for the storefront + admin.
-//
-// Every public getter degrades gracefully: if Supabase is not configured yet
-// (or a query fails), it returns the built-in fallback content so the site
-// never renders blank. Once the schema is seeded and the admin edits content,
-// the database values take over automatically.
+// All queries read directly from Supabase, returning empty results or null
+// on database errors or empty sets, ensuring strict dependence on DB data.
 // ============================================================================
 
 import { createClient } from "@/lib/supabase/server";
@@ -80,7 +77,7 @@ export interface SiteSettings {
   address: string;
 }
 
-// ── Defaults / fallbacks ──────────────────────────────────────────────────────
+// ── Default settings ─────────────────────────────────────────────────────────
 
 export const DEFAULT_SETTINGS: SiteSettings = {
   business_name: "Thennaiyan Coconut Company",
@@ -104,167 +101,6 @@ export const DEFAULT_SETTINGS: SiteSettings = {
   additional_branches: "0 (No additional registered business locations)",
   address: "No. 265/3B, Veppampatti Vilakku, Peraiyur Main Road Near Bus Stop, Pappinaickanpatti, Peraiyur, Madurai District, Tamil Nadu - 625705, India",
 };
-
-export const FALLBACK_PRODUCTS: ProductCardData[] = [
-  {
-    slug: "brownie-with-choco",
-    name: "Brownie With Choco",
-    variant: "Warm Fudge",
-    tagline: "Rich chocolate brownie drizzled with hot chocolate fudge sauce.",
-    description: "Our signature dark chocolate brownie is baked fresh daily and served warm, generously drizzled with premium chocolate fudge sauce.",
-    startingFrom: 90,
-    batch: "B-01",
-    pressed: "TODAY",
-    hueA: "#4b5563",
-    hueB: "#1f2937",
-    rating: 4.3,
-    category: "brownies",
-    isVeg: true,
-    isBestSeller: true,
-    image: "/images/brownie-choco.png",
-    benefits: ["100% Vegetarian", "Baked Fresh Daily", "Premium Dark Chocolate", "Served Warm"],
-  },
-  {
-    slug: "brownie-with-icecream-takeaway",
-    name: "Brownie With IceCream(Take...",
-    variant: "Dessert Pack",
-    tagline: "Vanilla ice cream on a classic brownie, packaged for takeaway.",
-    description: "A convenient takeaway container holding our classic dark chocolate brownie, topped with a scoop of premium vanilla ice cream, whipped cream, chocolate syrup, and a cherry.",
-    startingFrom: 125,
-    batch: "B-02",
-    pressed: "TODAY",
-    hueA: "#4b5563",
-    hueB: "#1f2937",
-    rating: 4.4,
-    category: "brownies",
-    isVeg: true,
-    isBestSeller: true,
-    image: "/images/brownie-icecream.png",
-    benefits: ["100% Vegetarian", "Convenient Takeaway Box", "Whipped Cream Included", "Topped with Cherry"],
-  },
-  {
-    slug: "brownie-with-icecream",
-    name: "Brownie With Icecream",
-    variant: "Ala Mode",
-    tagline: "Our signature brownie topped with a scoop of creamy vanilla ice cream.",
-    description: "The classic dine-in favorite. A warm chocolate brownie base supporting a cold scoop of rich vanilla ice cream, finished with whipped cream, chocolate syrup, and a cherry.",
-    startingFrom: 120,
-    batch: "B-03",
-    pressed: "TODAY",
-    hueA: "#4b5563",
-    hueB: "#1f2937",
-    rating: 4.5,
-    category: "brownies",
-    isVeg: true,
-    isBestSeller: true,
-    image: "/images/brownie-icecream.png",
-    benefits: ["100% Vegetarian", "Dine-in Favorite", "Warm & Cold Contrast", "Rich Chocolate Syrup"],
-  },
-  {
-    slug: "brownie-with-choco-takeaway",
-    name: "Brownie with Choco(Take...",
-    variant: "Fudge Pack",
-    tagline: "Rich chocolate brownie, served with hot chocolate fudge sauce.",
-    description: "Our signature warm chocolate fudge brownie in a convenient takeaway packaging, perfect for sweet cravings on the go.",
-    startingFrom: 95,
-    batch: "B-04",
-    pressed: "TODAY",
-    hueA: "#4b5563",
-    hueB: "#1f2937",
-    rating: 4.3,
-    category: "brownies",
-    isVeg: true,
-    isBestSeller: true,
-    image: "/images/brownie-choco.png",
-    benefits: ["100% Vegetarian", "Freshly Baked", "Fudge Sauce Included", "Travel Friendly Packaging"],
-  },
-  {
-    slug: "chicken-popcorn-takeaway",
-    name: "Chicken Popcorn(Take Away)",
-    variant: "Crispy Bites",
-    tagline: "Golden, crispy, seasoned bite-sized chicken pieces.",
-    description: "Crispy and tender bite-sized chicken popcorn seasoned with traditional spices, served with a creamy garlic mayonnaise dip.",
-    startingFrom: 155,
-    batch: "C-01",
-    pressed: "TODAY",
-    hueA: "#b45309",
-    hueB: "#78350f",
-    rating: 4.4,
-    category: "main-course",
-    isVeg: false,
-    isBestSeller: true,
-    image: "/images/chicken-popcorn.png",
-    benefits: ["100% Non-Vegetarian", "Crispy & Tender", "Spiced Seasoning", "Served with Garlic Dip"],
-  },
-  {
-    slug: "crunchy-cake-takeaway",
-    name: "Cho Cruncy Cake(Take Away)",
-    variant: "Gateau slice",
-    tagline: "Decadent chocolate cake with a crunchy texture layer.",
-    description: "A rich slice of chocolate crunchy gateau featuring layers of moist chocolate sponge, hazelnut crunch, and dark chocolate ganache frosting.",
-    startingFrom: 125,
-    batch: "G-01",
-    pressed: "TODAY",
-    hueA: "#1e3a8a",
-    hueB: "#172554",
-    rating: 4.5,
-    category: "birthday-cakes",
-    isVeg: true,
-    isBestSeller: true,
-    image: "/images/crunchy-cake.png",
-    benefits: ["100% Vegetarian", "Hazelnut Crunch", "Moist Sponge Layers", "Ganache Frosting"],
-  },
-];
-
-export const FALLBACK_CATEGORIES: CategoryRow[] = [
-  { id: "brownies", slug: "brownies", name: "BROWNIES", description: null, position: 1 },
-  { id: "birthday-cakes", slug: "birthday-cakes", name: "Birthday Cakes", description: null, position: 2 },
-  { id: "cold-beverages", slug: "cold-beverages", name: "COLD BEVERAGES", description: null, position: 3 },
-  { id: "special-desserts", slug: "special-desserts", name: "Thennaiyan Specials", description: null, position: 4 },
-  { id: "dessert", slug: "dessert", name: "Dessert", description: null, position: 5 },
-  { id: "hot-serves", slug: "hot-serves", name: "Hot Serves", description: null, position: 6 },
-  { id: "main-course", slug: "main-course", name: "Main Course", description: null, position: 7 },
-  { id: "make-it-a-meal", slug: "make-it-a-meal", name: "Make It A Meal", description: null, position: 8 },
-];
-
-export const FALLBACK_JOURNAL: JournalEntryView[] = [
-  {
-    slug: "summer-crop-harvest",
-    date_label: "28 FEB 2026",
-    batch: "BATCH 042",
-    title: "Harvesting the summer crop in Pappinaickanpatti",
-    excerpt:
-      "The hot dry winds of early summer yield coconuts with concentrated oil density. We document our harvest process in the groves of Pappinaickanpatti, picking only dry, fallen nuts for high-yield wooden extraction.",
-    body: null,
-    read_time: "4 min read",
-    is_published: true,
-    position: 1,
-  },
-  {
-    slug: "teak-wood-vs-stone",
-    date_label: "15 JAN 2026",
-    batch: "BATCH 041",
-    title: "Teak wood vs stone: why traditional wooden presses matter",
-    excerpt:
-      "While modern oil machines use steel screws and high heat, and old mills used stone, we chose teak-wood presses. Teak acts as a natural temperature absorber, keeping the seeds cool during friction turns.",
-    body: null,
-    read_time: "6 min read",
-    is_published: true,
-    position: 2,
-  },
-  {
-    slug: "cotton-cloth-filtration",
-    date_label: "04 DEC 2025",
-    batch: "BATCH 039",
-    title: "The slow art of cotton-cloth oil filtration",
-    excerpt:
-      "Clear coconut oil isn't always the purest. We let our freshly pressed oil settle naturally for 48 hours before passing it through organic cotton cloth.",
-    body: null,
-    read_time: "3 min read",
-    is_published: true,
-    position: 3,
-  },
-];
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
@@ -305,7 +141,7 @@ export function mapProductRowToCard(row: ProductRow): ProductCardData {
   };
 }
 
-// ── Public storefront getters (with fallbacks) ────────────────────────────────
+// ── Public storefront getters (DB data only) ─────────────────────────────────
 
 export async function getProducts(): Promise<ProductCardData[]> {
   try {
@@ -315,10 +151,10 @@ export async function getProducts(): Promise<ProductCardData[]> {
       .select("*, categories(slug)")
       .eq("is_active", true)
       .order("position", { ascending: true });
-    if (error || !data || data.length === 0) return FALLBACK_PRODUCTS;
+    if (error || !data) return [];
     return (data as ProductRow[]).map(mapProductRowToCard);
   } catch {
-    return FALLBACK_PRODUCTS;
+    return [];
   }
 }
 
@@ -329,10 +165,10 @@ export async function getCategories(): Promise<CategoryRow[]> {
       .from("categories")
       .select("*")
       .order("position", { ascending: true });
-    if (error || !data || data.length === 0) return FALLBACK_CATEGORIES;
+    if (error || !data) return [];
     return data as CategoryRow[];
   } catch {
-    return FALLBACK_CATEGORIES;
+    return [];
   }
 }
 
@@ -356,12 +192,10 @@ export async function getJournalBySlug(
       .eq("slug", slug)
       .eq("is_published", true)
       .maybeSingle();
-    if (error || !data) {
-      return FALLBACK_JOURNAL.find((e) => e.slug === slug) ?? null;
-    }
+    if (error || !data) return null;
     return data as JournalEntryView;
   } catch {
-    return FALLBACK_JOURNAL.find((e) => e.slug === slug) ?? null;
+    return null;
   }
 }
 
@@ -373,10 +207,10 @@ export async function getJournalEntries(): Promise<JournalEntryView[]> {
       .select("*")
       .eq("is_published", true)
       .order("position", { ascending: true });
-    if (error || !data || data.length === 0) return FALLBACK_JOURNAL;
+    if (error || !data) return [];
     return data as JournalEntryView[];
   } catch {
-    return FALLBACK_JOURNAL;
+    return [];
   }
 }
 

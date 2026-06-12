@@ -2,8 +2,12 @@ node_modules/
 .next/
 out/
 .env*.local
+.env
+.env.vercel
 .DS_Store
 *.log
 .vercel
 next-env.d.ts
 *.tsbuildinfo
+
+/lib/generated/prisma

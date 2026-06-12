@@ -633,6 +633,61 @@ drop policy if exists "settings_admin_write" on public.site_settings;
 create policy "settings_admin_write" on public.site_settings
   for all using (public.is_admin()) with check (public.is_admin());
 
+-- ════════════════════════════════════════════════════════════════════════════
+-- COUPONS (checkout discount codes)
+-- Required by app/actions/checkout.ts. Without these the order insert fails
+-- because orders.coupon_id / coupon_code / discount_inr would be missing.
+-- ════════════════════════════════════════════════════════════════════════════
+create table if not exists public.coupons (
+  id             uuid primary key default gen_random_uuid(),
+  code           text unique not null,
+  discount_type  text not null default 'percent' check (discount_type in ('percent','flat')),
+  discount_value numeric(10,2) not null default 0 check (discount_value >= 0),
+  min_order_inr  numeric(10,2) not null default 0 check (min_order_inr >= 0),
+  max_uses       int,
+  used_count     int not null default 0,
+  is_active      boolean not null default true,
+  valid_until    timestamptz,
+  created_at     timestamptz not null default now()
+);
+
+create table if not exists public.coupon_uses (
+  id           uuid primary key default gen_random_uuid(),
+  coupon_id    uuid not null references public.coupons(id) on delete cascade,
+  order_id     uuid references public.orders(id) on delete set null,
+  user_id      uuid references auth.users(id) on delete set null,
+  discount_inr numeric(10,2) not null default 0,
+  created_at   timestamptz not null default now()
+);
+
+create index if not exists coupon_uses_coupon_idx on public.coupon_uses(coupon_id);
+
+-- Orders need to remember which coupon was applied (checkout writes these).
+alter table public.orders
+  add column if not exists coupon_id    uuid references public.coupons(id) on delete set null,
+  add column if not exists coupon_code  text,
+  add column if not exists discount_inr numeric(10,2) not null default 0;
+
+alter table public.coupons enable row level security;
+
+drop policy if exists "coupons_public_read" on public.coupons;
+create policy "coupons_public_read" on public.coupons
+  for select using (is_active = true or public.is_admin());
+
+drop policy if exists "coupons_admin_write" on public.coupons;
+create policy "coupons_admin_write" on public.coupons
+  for all using (public.is_admin()) with check (public.is_admin());
+
+alter table public.coupon_uses enable row level security;
+
+drop policy if exists "coupon_uses_own_read" on public.coupon_uses;
+create policy "coupon_uses_own_read" on public.coupon_uses
+  for select using (user_id = auth.uid() or public.is_admin());
+
+drop policy if exists "coupon_uses_own_insert" on public.coupon_uses;
+create policy "coupon_uses_own_insert" on public.coupon_uses
+  for insert with check (user_id = auth.uid());
+
 -- keep updated_at fresh on the new tables
 create or replace function public.touch_updated_at()
 returns trigger language plpgsql as $$
@@ -661,78 +716,60 @@ delete from public.journal_entries;
 
 -- ── SEED: categories ─────────────────────────────────────────────────────────
 insert into public.categories (slug, name, description, position) values
-  ('brownies',  'BROWNIES',      'Delicious freshly baked brownies', 1),
-  ('birthday-cakes',  'Birthday Cakes',      'Artisan custom cakes', 2),
-  ('cold-beverages',  'COLD BEVERAGES',      'Refreshing cold drinks', 3),
-  ('special-desserts',  'Thennaiyan Specials',      'Signature specials', 4),
-  ('dessert',  'Dessert',      'Gourmet sweet treats', 5),
-  ('hot-serves',  'Hot Serves',      'Hot beverages and foods', 6),
-  ('main-course',  'Main Course',      'Savory food selections', 7),
-  ('make-it-a-meal',  'Make It A Meal',      'Meal packages', 8)
+  ('oils', 'Oils', 'Pure, wood-pressed and cold-pressed coconut oils.', 1),
+  ('byproducts', 'Byproducts & Crafts', 'Eco-friendly coconut shell crafts, activated carbon, and coco peat.', 2),
+  ('gardening', 'Organic Gardening', 'Organic coco peat and soils for home gardening and nurseries.', 3)
 on conflict (slug) do nothing;
 
 -- ── SEED: products (matches the storefront cards) ────────────────────────────
 insert into public.products
   (slug, name, variant_label, tagline, description, category_id, batch_no, pressed_at, origin, starting_from_inr, rating, benefits, hue_a, hue_b, position, is_veg, is_best_seller, hero_image)
 values
-  ('brownie-with-choco', 'Brownie With Choco', 'Warm Fudge',
-   'Rich chocolate brownie drizzled with hot chocolate fudge sauce.',
-   'Our signature dark chocolate brownie is baked fresh daily and served warm, generously drizzled with premium chocolate fudge sauce.',
-   (select id from public.categories where slug = 'brownies'), 'B-01', '2026-06-11', 'Madurai', 90, 4.3,
-   array['100% Vegetarian','Baked Fresh Daily','Premium Dark Chocolate','Served Warm'],
-   '#4b5563', '#1f2937', 1, true, true, '/images/brownie-choco.png'),
+  ('wood-pressed-coconut-oil', 'Wood-Pressed Coconut Oil', 'Wood-Pressed (Chekku)',
+   '100% pure, unrefined oil extracted from premium sun-dried copra.',
+   'Our signature coconut oil is extracted using traditional Vagai wood press (Chekku) at low speeds to retain the natural aroma, nutrients, and antioxidants. Zero solvents, zero chemicals, and no hydrogenated fats.',
+   (select id from public.categories where slug = 'oils'), 'B-101', '2026-06-11', 'Madurai', 120, 4.9,
+   array['100% Pure & Unrefined','Traditional Vaagai Wood Press','Rich in Lauric Acid','No Added Preservatives'],
+   '#1b4332', '#081c15', 1, true, true, '/images/wood-pressed-oil.png'),
 
-  ('brownie-with-icecream-takeaway', 'Brownie With IceCream(Take...', 'Dessert Pack',
-   'Vanilla ice cream on a classic brownie, packaged for takeaway.',
-   'A convenient takeaway container holding our classic dark chocolate brownie, topped with a scoop of premium vanilla ice cream, whipped cream, chocolate syrup, and a cherry.',
-   (select id from public.categories where slug = 'brownies'), 'B-02', '2026-06-11', 'Madurai', 125, 4.4,
-   array['100% Vegetarian','Convenient Takeaway Box','Whipped Cream Included','Topped with Cherry'],
-   '#4b5563', '#1f2937', 2, true, true, '/images/brownie-icecream.png'),
+  ('cold-pressed-virgin-coconut-oil', 'Cold-Pressed Virgin Coconut Oil', 'Centrifuged (Virgin)',
+   'Premium grade virgin coconut oil extracted from fresh coconut milk.',
+   'Cold-pressed from the milk of freshly harvested organic coconuts. We use centrifugal separation technique to ensure zero heat is generated, yielding a light, pure, non-greasy virgin oil perfect for direct consumption, skin hydration, and baby massage.',
+   (select id from public.categories where slug = 'oils'), 'B-102', '2026-06-11', 'Madurai', 180, 4.8,
+   array['Centrifugal Cold Extraction','Premium Virgin Grade','Ideal for Skin & Hair Care','Rich in MCTs & Lauric Acid'],
+   '#1b4332', '#081c15', 2, true, true, '/images/virgin-oil.png'),
 
-  ('brownie-with-icecream', 'Brownie With Icecream', 'Ala Mode',
-   'Our signature brownie topped with a scoop of creamy vanilla ice cream.',
-   'The classic dine-in favorite. A warm chocolate brownie base supporting a cold scoop of rich vanilla ice cream, finished with whipped cream, chocolate syrup, and a cherry.',
-   (select id from public.categories where slug = 'brownies'), 'B-03', '2026-06-11', 'Madurai', 120, 4.5,
-   array['100% Vegetarian','Dine-in Favorite','Warm & Cold Contrast','Rich Chocolate Syrup'],
-   '#4b5563', '#1f2937', 3, true, true, '/images/brownie-icecream.png'),
+  ('hibiscus-hair-oil', 'Hibiscus Herbal Hair Oil', 'Solar Infused',
+   'Nourishing herbal hair oil solar-infused with fresh hibiscus and curry leaves.',
+   'Made by solar-infusing fresh red hibiscus petals, curry leaves, and fenugreek seeds in raw wood-pressed coconut oil for 7 days. Prevents hair fall, strengthens hair roots, and maintains natural hair shine.',
+   (select id from public.categories where slug = 'oils'), 'B-103', '2026-06-11', 'Madurai', 150, 4.9,
+   array['7-Day Solar Infused','Red Hibiscus & Curry Leaves','Strengthens Hair Roots','Prevents Premature Greying'],
+   '#1b4332', '#081c15', 3, true, true, '/images/herbal-oil.png'),
 
-  ('brownie-with-choco-takeaway', 'Brownie with Choco(Take...', 'Fudge Pack',
-   'Rich chocolate brownie, served with hot chocolate fudge sauce.',
-   'Our signature warm chocolate fudge brownie in a convenient takeaway packaging, perfect for sweet cravings on the go.',
-   (select id from public.categories where slug = 'brownies'), 'B-04', '2026-06-11', 'Madurai', 95, 4.3,
-   array['100% Vegetarian','Freshly Baked','Fudge Sauce Included','Travel Friendly Packaging'],
-   '#4b5563', '#1f2937', 4, true, true, '/images/brownie-choco.png'),
-
-  ('chicken-popcorn-takeaway', 'Chicken Popcorn(Take Away)', 'Crispy Bites',
-   'Golden, crispy, seasoned bite-sized chicken pieces.',
-   'Crispy and tender bite-sized chicken popcorn seasoned with traditional spices, served with a creamy garlic mayonnaise dip.',
-   (select id from public.categories where slug = 'main-course'), 'C-01', '2026-06-11', 'Madurai', 155, 4.4,
-   array['100% Non-Vegetarian','Crispy & Tender','Spiced Seasoning','Served with Garlic Dip'],
-   '#b45309', '#78350f', 5, false, true, '/images/chicken-popcorn.png'),
-
-  ('crunchy-cake-takeaway', 'Cho Cruncy Cake(Take Away)', 'Gateau slice',
-   'Decadent chocolate cake with a crunchy texture layer.',
-   'A rich slice of chocolate crunchy gateau featuring layers of moist chocolate sponge, hazelnut crunch, and dark chocolate ganache frosting.',
-   (select id from public.categories where slug = 'birthday-cakes'), 'G-01', '2026-06-11', 'Madurai', 125, 4.5,
-   array['100% Vegetarian','Hazelnut Crunch','Moist Sponge Layers','Ganache Frosting'],
-   '#1e3a8a', '#172554', 6, true, true, '/images/crunchy-cake.png')
+  ('coco-peat-block', 'Organic Coco Peat Block', 'Soil Conditioner',
+   'Eco-friendly, highly compressed coir pith blocks for home gardening.',
+   'Premium organic coir pith compressed into convenient blocks. Ideal for seed germination, potting mixes, greenhouse cultivation, and home gardening. Holds moisture up to 8 times its weight.',
+   (select id from public.categories where slug = 'gardening'), 'B-104', '2026-06-11', 'Madurai', 95, 4.7,
+   array['100% Organic Soil Less Medium','High Water Retention Capacity','Promotes Strong Root Growth','Eco-Friendly & Biodegradable'],
+   '#5c3d2e', '#3d251e', 4, true, false, '/images/coco-peat.png')
 on conflict (slug) do nothing;
 
 -- ── SEED: journal entries ────────────────────────────────────────────────────
 insert into public.journal_entries (slug, date_label, batch, title, excerpt, read_time, position) values
-  ('thennaiyan-company-profile', '11 JUN 2026', 'PROFILE',
-   'Thennaiyan Coconut Company profile updated',
-   'Official company, GST, proprietor, and registered address details have been updated for Thennaiyan Coconut Company.',
+  ('launching-thennaiyan-storefront', '12 JUN 2026', 'LAUNCH',
+   'Bringing Pure Wood-Pressed Oils to Your Doorstep',
+   'We are excited to launch Thennaiyan Coconut Company online, bringing traditional Madurai-pressed oils and organic coconut products directly to households across India.',
    '3 min read', 1),
-  ('crafting-perfect-brownie', '05 JUN 2026', 'KITCHEN',
-   'The art of the perfect warm chocolate brownie',
-   'What makes a brownie fudgy rather than cakey? Our head chef shares the secrets of balancing dark chocolate blends and precise baking temperatures.',
+  ('why-wood-pressed-chekku-oil', '08 JUN 2026', 'HEALTH',
+   'Why Wood-Pressed Chekku Oil is Superior to Refined Oil',
+   'What is the difference between refined oil and wood-pressed oil? Learn how low-temperature extraction preserves natural antioxidants, lauric acid, and vitamins.',
    '5 min read', 2)
 on conflict (slug) do nothing;
 
 -- ── SEED: the singleton settings row ─────────────────────────────────────────
 insert into public.site_settings (
   id,
+
   business_name,
   brand_short,
   whatsapp_number,

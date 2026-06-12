@@ -33,6 +33,7 @@ function parseProduct(formData: FormData) {
     hue_b: String(formData.get("hue_b") ?? "").trim() || "#A8762A",
     is_active: isActiveRaw === "on" || isActiveRaw === "true",
     position: Number(formData.get("position") ?? 0) || 0,
+    hero_image: String(formData.get("hero_image") ?? "").trim() || null,
   };
 }
 

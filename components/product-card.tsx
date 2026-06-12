@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Heart, Star, ShoppingCart } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useLanguage } from "@/lib/language-context";
 
 export interface ProductCardData {
   slug: string;
@@ -39,9 +40,16 @@ export function ProductCard({
   brand = "Thennaiyan",
 }: ProductCardProps) {
   const [isFavorite, setIsFavorite] = useState(false);
+  const { t, lang, translateProduct } = useLanguage();
 
-  const whatsappText = `Hi, I'd like to order: *${data.name}* from ${brand}.
-Price: ₹${data.startingFrom}`;
+  const localized = translateProduct(data.slug, data);
+
+  const displayBrand = lang === "ta" ? t("brand") : brand;
+
+  const whatsappText = lang === "ta"
+    ? `வணக்கம், நான் *${localized.name}* ஆர்டர் செய்ய விரும்புகிறேன் (${displayBrand}).\nவிலை: ₹${data.startingFrom}`
+    : `Hi, I'd like to order: *${localized.name}* from ${displayBrand}.\nPrice: ₹${data.startingFrom}`;
+
   const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(whatsappText)}`;
 
   const handleFavoriteClick = (e: React.MouseEvent) => {
@@ -52,7 +60,14 @@ Price: ₹${data.startingFrom}`;
 
   const handleCardClick = () => {
     if (onViewDetails) {
-      onViewDetails(data);
+      // Pass the localized product data to the modal so it displays the correct language
+      onViewDetails({
+        ...data,
+        name: localized.name,
+        tagline: localized.tagline,
+        description: localized.description,
+        benefits: localized.benefits,
+      });
     }
   };
 
@@ -69,7 +84,7 @@ Price: ₹${data.startingFrom}`;
       <div className="aspect-[4/3] relative overflow-hidden bg-gray-100 flex-shrink-0">
         <img
           src={data.image || "/images/placeholder.png"}
-          alt={data.name}
+          alt={localized.name}
           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
         />
 
@@ -88,20 +103,10 @@ Price: ₹${data.startingFrom}`;
           />
         </button>
 
-        {/* Top right Veg/Non-Veg badge */}
-        <div
-          className={cn(
-            "absolute right-3 top-3 px-2 py-0.5 text-[9px] font-bold tracking-wider rounded text-white z-10",
-            data.isVeg ? "bg-[#1fb36c]" : "bg-[#e23c3c]"
-          )}
-        >
-          {data.isVeg ? "VEG" : "NON-VEG"}
-        </div>
-
         {/* Bottom overlay for name & rating */}
         <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/85 via-black/40 to-transparent p-3 pt-8 flex items-end justify-between gap-2">
           <h3 className="font-body font-bold text-base text-white line-clamp-1">
-            {data.name}
+            {localized.name}
           </h3>
           {data.rating && (
             <div className="flex items-center gap-0.5 px-1.5 py-0.5 bg-black/40 text-white text-[10px] font-bold rounded backdrop-blur-xs flex-shrink-0">
@@ -121,7 +126,7 @@ Price: ₹${data.startingFrom}`;
           </span>
           {data.isBestSeller && (
             <span className="text-[10px] font-bold text-gray-400 tracking-wider">
-              BEST SELLER
+              {t("bestSeller")}
             </span>
           )}
         </div>
@@ -136,7 +141,7 @@ Price: ₹${data.startingFrom}`;
             className="btn-primary !px-2.5 !py-2 !text-xs rounded-full flex items-center justify-center gap-1.5 hover:opacity-95"
           >
             <ShoppingCart size={13} strokeWidth={2.5} />
-            <span>Add</span>
+            <span>{t("add")}</span>
           </a>
 
           <button
@@ -146,7 +151,7 @@ Price: ₹${data.startingFrom}`;
             }}
             className="btn-secondary !px-2.5 !py-2 !text-xs rounded-full hover:bg-leaf/5"
           >
-            View Nutrition
+            {t("viewDetails")}
           </button>
         </div>
       </div>

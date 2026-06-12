@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Package, BookText, Settings, Plus, ArrowRight } from "lucide-react";
+import { Package, BookText, Settings, Plus, ArrowRight, BarChart3, ShoppingCart } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 
 export default async function AdminDashboard() {
@@ -88,6 +88,12 @@ export default async function AdminDashboard() {
         <div className="mt-4 flex flex-wrap gap-3">
           <Link href="/admin/products/new" className="btn-primary">
             <Plus size={16} /> New product
+          </Link>
+          <Link href="/admin/analytics" className="btn-secondary">
+            <BarChart3 size={16} /> Analytics
+          </Link>
+          <Link href="/admin/orders" className="btn-secondary">
+            <ShoppingCart size={16} /> Orders
           </Link>
           <Link href="/admin/journal/new" className="btn-secondary">
             <Plus size={16} /> New journal log

@@ -47,6 +47,8 @@ export async function SiteFooter() {
                 ["Story", "/story"],
                 ["Journal", "/journal"],
                 ["Contact", "/contact"],
+                ["Privacy Policy", "/privacy"],
+                ["Terms & Conditions", "/terms"],
               ].map(([label, href]) => (
                 <li key={href}>
                   <a href={href} className="transition-colors hover:text-white">

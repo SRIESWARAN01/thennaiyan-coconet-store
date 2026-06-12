@@ -3,6 +3,7 @@ import { SiteFooter } from "@/components/site-footer";
 import { BatchStamp } from "@/components/batch-stamp";
 import { User, MapPin, FileText, Calendar, Building, Landmark } from "lucide-react";
 import { getSettings } from "@/lib/queries";
+import { FaqAccordion } from "@/components/faq-accordion";
 
 export const metadata = {
   title: "Our Story - Thennaiyan Coconut Company",
@@ -204,6 +205,41 @@ export default async function StoryPage() {
                 </div>
               </div>
             </div>
+          </div>
+        </section>
+
+        {/* Mission & Vision */}
+        <section className="py-20 lg:py-24 bg-kernel border-b hairline">
+          <div className="container max-w-4xl">
+            <span className="eyebrow text-oil">Purpose & Values</span>
+            <div className="grid md:grid-cols-2 gap-12 mt-8">
+              <div className="space-y-4">
+                <h3 className="font-display text-2xl text-leaf-deep font-bold" style={{ fontVariationSettings: "'SOFT' 50, 'opsz' 24" }}>Our Mission</h3>
+                <p className="font-body text-sm lg:text-base text-shell leading-relaxed">
+                  To revive and preserve the age-old tradition of wood-pressed (Chekku) oil extraction, ensuring households across India have access to 100% pure, unrefined, and chemical-free coconut oils that promote healthy living and culinary authenticity.
+                </p>
+              </div>
+              <div className="space-y-4">
+                <h3 className="font-display text-2xl text-leaf-deep font-bold" style={{ fontVariationSettings: "'SOFT' 50, 'opsz' 24" }}>Our Vision</h3>
+                <p className="font-body text-sm lg:text-base text-shell leading-relaxed">
+                  To become the nation's most trusted brand for natural coconut products, empowering local farming communities in Madurai and establishing traditional cold-press techniques as the gold standard for pure cooking oils globally.
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* FAQ Section */}
+        <section className="py-20 lg:py-24 bg-kernel">
+          <div className="container max-w-4xl">
+            <span className="eyebrow text-oil">Common Enquiries</span>
+            <h2 className="mt-3 font-display text-display-md text-leaf-deep" style={{ fontVariationSettings: "'SOFT' 60, 'opsz' 40" }}>
+              Frequently Asked Questions
+            </h2>
+            <p className="mt-4 font-body text-sm md:text-base text-shell max-w-2xl leading-relaxed">
+              Find quick answers to queries regarding our wooden chekku press methods, product packaging, and WhatsApp order delivery process.
+            </p>
+            <FaqAccordion />
           </div>
         </section>
       </main>

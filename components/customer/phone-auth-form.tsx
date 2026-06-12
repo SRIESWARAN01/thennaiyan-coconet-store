@@ -12,6 +12,10 @@ type PhoneAuthFormProps = {
 
 type Step = "phone" | "otp" | "done";
 
+// Offline OTP demo (code "123456") is only active when
+// NEXT_PUBLIC_ENABLE_MOCK_AUTH="true". In production, real Supabase SMS OTP is used.
+const MOCK_AUTH_ENABLED = process.env.NEXT_PUBLIC_ENABLE_MOCK_AUTH === "true";
+
 function normalizePhone(value: string) {
   const trimmed = value.trim().replace(/\s+/g, "");
   if (!trimmed) return "";
@@ -65,8 +69,16 @@ export function PhoneAuthForm({ next, mode = "login" }: PhoneAuthFormProps) {
 
       setStep("otp");
       setMessage("OTP sent. Enter the code from your mobile.");
-    } catch {
-      setError("Could not send OTP. Check Supabase phone auth settings.");
+    } catch (err) {
+      if (MOCK_AUTH_ENABLED) {
+        console.warn("OTP delivery failed (enabling offline mock mode):", err);
+        setStep("otp");
+        setMessage("OTP sent (Offline Mode: Use code '123456' to log in).");
+      } else {
+        setError(
+          "Could not send the OTP. Please check your number and try again.",
+        );
+      }
     } finally {
       setPending(false);
     }
@@ -79,6 +91,18 @@ export function PhoneAuthForm({ next, mode = "login" }: PhoneAuthFormProps) {
 
     if (!otp.trim()) {
       setError("Enter the OTP.");
+      return;
+    }
+
+    if (MOCK_AUTH_ENABLED && otp.trim() === "123456") {
+      document.cookie = "sb-access-token=mock-customer; path=/";
+      document.cookie = "sb-refresh-token=mock-customer; path=/";
+      setStep("done");
+      setMessage("Account ready. Opening your panel...");
+      setTimeout(() => {
+        router.push(safeNext);
+        router.refresh();
+      }, 500);
       return;
     }
 
